@@ -56,11 +56,6 @@ beacon_command_register(
 alias syscall_enable_priv {
     local('$handle $args $data');
 
-    if ( !-is64 $1 ) {
-        show_error("This must be a 64-bit process to work effectively. Exiting.");
-        return;
-    }
-
     if ( size(@_) != 2 ) {
         blog($1, beacon_command_detail("syscall_enable_priv"));
         return;
@@ -85,11 +80,6 @@ alias syscall_enable_priv {
 
 alias syscall_disable_priv {
     local('$handle $args $data');
-
-    if ( !-is64 $1 ) {
-        show_error("This must be a 64-bit process to work effectively. Exiting.");
-        return;
-    }
 
     if ( size(@_) != 2 ) {
         blog($1, beacon_command_detail("syscall_disable_priv"));
