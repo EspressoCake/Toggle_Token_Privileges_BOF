@@ -5,7 +5,7 @@
 - An (almost) syscall-only BOF file intended to either add or remove token privileges within the context of your current process.
 ##
 #### Who wrote it?
-- Justin Lucas  (@EspressoCake/@the_bit_diddler)
+- Justin Lucas  (@the_bit_diddler)
 - Brad Campbell (@hackersoup)
 ##
 #### What problem are you trying to solve?
